@@ -179,7 +179,7 @@ class MyPyTable:
         Notes:
             Use the csv module.
         """
-        with open(filename, mode="w", newline='') as file:
+        with open(filename, mode="w", newline='', encoding='utf8') as file:
             writer = csv.writer(file, delimiter=',')
             writer.writerow(self.column_names)
             for row in self.data:
