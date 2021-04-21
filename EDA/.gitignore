@@ -1,0 +1,6 @@
+Yelp_data/
+yelp_dataset.tar
+
+*.vs
+*.vscode
+/.ipynb_checkpoints
