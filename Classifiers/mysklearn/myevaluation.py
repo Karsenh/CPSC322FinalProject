@@ -5,7 +5,7 @@ Apr 21 2021
 myevaluation.py
 """
 
-import myutils as myutils
+import mysklearn.myutils as myutils
 import random
 import math
 import copy

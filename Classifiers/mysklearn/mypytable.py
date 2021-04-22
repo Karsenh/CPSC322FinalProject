@@ -1,13 +1,11 @@
 import copy
 import csv
 import json
-# uncomment if you want to use the pretty_print() method
 from tabulate import tabulate
-# install tabulate with: pip install tabulate inside Docker container environment
 
-# required functions/methods are noted with TODOs
-# provided unit tests are in test_mypytable.py
-# do not modify this class name, required function/method headers, or the unit tests
+import sys
+
+csv.field_size_limit(sys.maxsize)
 
 
 class MyPyTable:
@@ -131,7 +129,9 @@ class MyPyTable:
         with open(filename, mode="r") as file:
             reader = csv.reader(file)
             count = 0
+            output_count = 2
             for row in reader:
+                output_count += 1
                 if count == 0:
                     self.column_names = row
                 else:

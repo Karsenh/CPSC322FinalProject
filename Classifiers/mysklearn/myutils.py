@@ -966,3 +966,45 @@ def extractRules(tree, rules, stmt, previous_value, class_name):
         stmt = re.sub(' +', ' ', stmt)
         rules.append(stmt)
     return rules
+
+def remove_rows_from_data(col_names, table):
+    for row in table.data:
+        adjustment = 0
+        for name in col_names:
+            idx = table.column_names.index(name)
+            del row[idx - adjustment]
+            adjustment += 1
+
+    for name in col_names:
+            idx = table.column_names.index(name)
+            del table.column_names[idx]
+
+def get_friend_count(idx, table):
+    for row in table.data:
+        friend_string = str(row[idx])
+        commaless = friend_string.replace(',', '')
+        spaceless = commaless.replace(' ', '')
+        friend_count = len(spaceless)/22
+        row[idx] = friend_count
+
+def get_useful_bin(val):
+    if val < 10:
+        return 1
+    elif val < 30:
+        return 2
+    elif val < 60:
+        return 3
+    elif val < 100:
+        return 4
+    elif val < 300:
+        return 5
+    elif val < 600:
+        return 6
+    elif val < 900:
+        return 7
+    elif val < 1300:
+        return 8
+    elif val < 2000:
+        return 9
+    else:
+        return 10
