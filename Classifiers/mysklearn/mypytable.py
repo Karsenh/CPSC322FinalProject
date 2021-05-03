@@ -91,7 +91,6 @@ class MyPyTable:
             Leave values as is that cannot be converted to numeric.
         """
         row, col = self.get_shape()
-
         for i in range(row):
             for j in range(col):
                 try:

@@ -14,6 +14,8 @@ from operator import itemgetter
 from collections import Counter
 import itertools
 import re
+from mysklearn.myclassifiers import MyDecisionTreeClassifier
+from mysklearn import myevaluation
 
 def compute_best_fit(x, y):
     """ Function to compute the slope and intercept of a best fit line for two data sets
@@ -657,7 +659,7 @@ def get_rand_rows_table(data, num_rows):
     return rand_X, rand_y
 
 #---------------------------------------------------------------------
-#-------------------------------PA 6----------------------------------
+#-------------------------Decision Tree-------------------------------
 #---------------------------------------------------------------------
 
 def entropy(y):
@@ -1008,3 +1010,86 @@ def get_useful_bin(val):
         return 9
     else:
         return 10
+
+#---------------------------------------------------------------------
+#-------------------------Random Forest-------------------------------
+#---------------------------------------------------------------------
+
+def compute_bootstrapped_sample(table):
+    """ Function to get the bootstrapped sample from a table
+
+    params: table
+    return: the sample of random instances with replacement from the table
+    """
+    n = len(table)
+    sample = []
+    validation = []
+    for _ in range(n):
+        rand_index = random.randrange(0, n)
+        sample.append(table[rand_index])
+
+    for row in table:
+        if row not in sample:
+            validation.append(row)
+
+    return sample, validation
+
+def sort_forest(accuracy_list, forest):
+    sorted_forest = []
+    unsorted = accuracy_list
+    for i in range(len(accuracy_list)):
+        unsorted = accuracy_list[i:]
+        min_value = min(unsorted)
+        unsorted.remove(min_value)
+        tree_index = accuracy_list.index(min_value)
+        sorted_forest.insert(0, forest[tree_index])
+
+    return sorted_forest
+
+def calculate_accuracy(y_predict, y_test):
+    
+    if (len(y_predict) != 0):
+        count = 0
+        for i in range(len(y_predict)):
+            if y_predict[i] == y_test[i]:
+                count += 1
+        return count/len(y_predict)
+    else:
+        return 0
+
+def prune_forest(forest, M):
+    return forest[:M]
+
+def random_forest_generation(remainder_set, N, M):
+    complete_forest = []
+    accuracy_forest = []
+    pruned_forest = []
+    for _ in range(N):
+        training, validation = compute_bootstrapped_sample(remainder_set)
+        X_train, y_train = split_x_y_train(training)
+        X_test, y_test = split_x_y_train(validation)
+        myDT = MyDecisionTreeClassifier()
+        myDT.fit(X_train, y_train)
+        y_predict = myDT.predict(X_test)
+        accuracy = calculate_accuracy(y_predict, y_test)
+        accuracy_forest.append(accuracy)
+        complete_forest.append(myDT)
+    sorted_forest = sort_forest(accuracy_forest, complete_forest)
+    pruned_forest = prune_forest(sorted_forest, M)
+
+    return pruned_forest
+
+def get_majority_vote(predictions):
+    distinct = []
+    votes = []
+    for prediction in predictions:
+        if prediction in distinct:
+            vote_idx = distinct.index(prediction)
+            votes[vote_idx] += 1
+        else:
+            distinct.append(prediction)
+            votes.append(1)
+    
+    max_idx = votes.index(max(votes))
+    return distinct[max_idx]
+

@@ -197,19 +197,23 @@ class MyRandomForestClassifier:
         """Initializer for MyRandomForestClassifier.
 
         """
-        pass
-    def fit(self, X_train, y_train):
+        self.remainder = None
+        self.pruned_forest = None
+        self.N = None
+        self.M = None
+        
+    def fit(self, remainder, N, M):
         """Fits for random forest
 
         Args:
-            X_train(list of list of obj): The list of training instances (samples). 
-                The shape of X_train is (n_train_samples, n_features)
-            y_train(list of obj): The target y values (parallel to X_train)
-                The shape of y_train is n_train_samples
+            remainder: The subset of the table which is used to generate the pruned forest
 
         Notes:
         """
-        pass
+        self.remainder = remainder
+        self.N = N
+        self.M = M
+        self.pruned_forest = myutils.random_forest_generation(remainder, N, M)
         
     def predict(self, X_test):
         """Makes predictions for test instances in X_test.
@@ -221,5 +225,14 @@ class MyRandomForestClassifier:
         Returns:
             y_predicted(list of obj): The predicted target y values (parallel to X_test)
         """
-        pass
+        y_predicted = []
+        for instance in X_test:
+            predictions = []
+            for tree in self.pruned_forest:
+                prediction = tree.predict([instance])
+                predictions.append(prediction[0])
+            y_predicted.append(myutils.get_majority_vote(predictions))
+        
+        return y_predicted
+
 
