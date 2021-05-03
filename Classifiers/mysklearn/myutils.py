@@ -918,20 +918,26 @@ def classifySample(instance, tree):
 
     # Check if the top of the tree is an attribute
     if tree[0] == 'Attribute':
-        # Recurse to get to the leaf
+        # Recurse into value
         classifier = classifySample(instance, tree[2:])
     # Check if beneath the attribute is a value node
     if tree[0][0] == 'Value':
+        flag = False
         # Go through the tree
         for i in range(len(tree)):
             # Check if the value is in the instance
             if tree[i][1] in instance:
+                flag = True
                 # Grab the leaf node associated with the instace
                 classifier = classifySample(instance, tree[i][2])
-                break
+            if not flag:
+                classifier = tree[0][2][1]
     if tree[0] == 'Leaf':
         # We found the leaf node and can classify
         return tree[1]
+    if classifier is None:
+        print(tree)
+        print()
     return classifier
 
 
