@@ -1047,12 +1047,15 @@ def sort_forest(accuracy_list, forest):
     return sorted_forest
 
 def calculate_accuracy(y_predict, y_test):
-    count = 0
-    for i in range(len(y_predict)):
-        if y_predict[i] == y_test[i]:
-            count += 1
-
-    return count/len(y_predict)
+    
+    if (len(y_predict) != 0):
+        count = 0
+        for i in range(len(y_predict)):
+            if y_predict[i] == y_test[i]:
+                count += 1
+        return count/len(y_predict)
+    else:
+        return 0
 
 def prune_forest(forest, M):
     return forest[:M]
