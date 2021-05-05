@@ -9,4 +9,6 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run()
+    port = os.environ.get("PORT", 5000)
+    # TODO: set debug to False for production Heroku build
+    app.run(debug=True, host="0.0.0.0", port=port)
