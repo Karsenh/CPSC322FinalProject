@@ -15,7 +15,7 @@ def predict():
     # get a prediction for this unseen instance via naive bayes
     # return the prediction as a JSON Response
 
-    prediction = predict_yelp_well([fans, cp, friends])
+    prediction = predict_yelp_well([float(fans), float(cp), float(friends)])
     # if anything goes wrong, predict_yelp_well() is going to return None
     if prediction is not None:
         result = {"prediction": prediction}
@@ -27,8 +27,6 @@ def predict():
 def predict_yelp_well(instance):
     infile = open("nb.p", "rb")
     priors, posteriors = pickle.load(infile)
-    print("priors", priors)
-    print("posteriors", posteriors)
     try:
         probs = compute_probs(instance, priors, posteriors)
         return predict_from(probs)
@@ -64,7 +62,6 @@ def compute_probs(test, priors, posteriors):
         dictionary = posteriors[k] # Get the posteriors dictionary
         probs = []
         probs.append(prior) # Append the prior probability
-
         # Loop through the test
         for i in range(len(test)):
             if test[i] in dictionary[i]:  
