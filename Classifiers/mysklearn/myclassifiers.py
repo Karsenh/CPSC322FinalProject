@@ -148,8 +148,6 @@ class MyDecisionTreeClassifier:
         y_predicted = []
         for instance in X_test:
             y_pred = myutils.classifySample(instance, self.tree)
-            if (y_pred is None):
-                print(instance)
             y_predicted.append(y_pred)
         return y_predicted
 

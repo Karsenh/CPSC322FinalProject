@@ -14,7 +14,7 @@ from operator import itemgetter
 from collections import Counter
 import itertools
 import re
-from mysklearn.myclassifiers import MyDecisionTreeClassifier
+from mysklearn.myclassifiers import MyDecisionTreeClassifier, MyRandomForestClassifier
 from mysklearn import myevaluation
 
 def compute_best_fit(x, y):
@@ -930,14 +930,14 @@ def classifySample(instance, tree):
                 flag = True
                 # Grab the leaf node associated with the instace
                 classifier = classifySample(instance, tree[i][2])
-            if not flag:
-                classifier = tree[0][2][1]
+        if flag is False:
+            if tree[0][1] == 0.18181818181818182 or tree[0][1] == 0.0:
+                classifier = classifySample(instance, tree[i][2])
+            else:
+                print(tree[0])
     if tree[0] == 'Leaf':
         # We found the leaf node and can classify
         return tree[1]
-    if classifier is None:
-        print(tree)
-        print()
     return classifier
 
 
@@ -1098,4 +1098,46 @@ def get_majority_vote(predictions):
     
     max_idx = votes.index(max(votes))
     return distinct[max_idx]
+
+def select_random_attributes(F, table):
+    if F == len(table[0]) - 1:
+        return table
+    else:
+        adjusted_dataset = []
+        indices = random.sample(range(0, F+1), F)
+        for row in table:
+            adjusted_row = []
+            for index in indices:
+                adjusted_row.append(row[index])
+            adjusted_dataset.append(adjusted_row)
+        return adjusted_dataset
+    
+            
+
+def tune_parameters(M, N, F, dataset):
+    print("M =",M, "N =", N, "F =", F)
+    adjusted_dataset = select_random_attributes(F, dataset.data)
+    for i in range(5):
+        X, y = split_x_y_train(adjusted_dataset)
+        x_train, x_test, y_train, y_test = myevaluation.train_test_split(X, y, shuffle=True)
+
+        remainder = []
+    
+        for j in range(len(x_train)):
+            row = x_train[j]
+            row.append(y_train[j])
+            remainder.append(row)
+        myRF = MyRandomForestClassifier()
+        myRF.fit(remainder, M, N)
+        y_predict_rf = myRF.predict(x_test)
+        count = 0
+        for l in range(len(y_predict_rf)):
+            binned_predict = get_useful_bin(y_predict_rf[l])
+            binned_test = get_useful_bin(y_test[l])
+            if (binned_predict == binned_test):
+                count = count + 1;
+
+        accuracy = count / len(y_predict_rf)
+        error = (len(y_predict_rf) - count) / len(y_predict_rf)
+        print(i, "-- accuracy =", accuracy, "error =", error)
 
